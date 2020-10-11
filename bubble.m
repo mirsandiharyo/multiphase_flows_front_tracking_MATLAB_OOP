@@ -1,5 +1,5 @@
 % Bubble class.
-classdef Bubble
+classdef Bubble < handle
     properties(SetAccess = private)
        centerX
        centerY
@@ -20,6 +20,14 @@ classdef Bubble
             obj.point = point;
             [obj.x, obj.y, obj.xOld, obj.yOld] = ...
             deal(zeros(1,obj.point+2));
+        end
+        
+        % Determine the location of the initial spherical bubble.
+        function initializeFront(obj)
+            for i=1:obj.point+2
+                obj.x(i) = obj.centerX-obj.radius*sin(2.0*pi*(i-1)/(obj.point));
+                obj.y(i) = obj.centerY+obj.radius*cos(2.0*pi*(i-1)/(obj.point));
+            end
         end
     end
 end

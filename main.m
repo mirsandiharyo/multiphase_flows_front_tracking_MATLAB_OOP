@@ -25,7 +25,10 @@ fluid = Fluid(domain, fluidProp);
 fluid.initializeDomain(domain, center, bubbleList, fluidProp);
 
 % set the initial front (gas-liquid interface)
-
+for n=1:length(bubbleList)
+    bubbleList{n}.initializeFront();
+end
+                   
 % start time-loop
 
 % visualize the initial condition
