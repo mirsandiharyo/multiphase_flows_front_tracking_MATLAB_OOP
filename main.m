@@ -13,17 +13,13 @@ IOManager.createDir;
 IOManager.cleanDir;
 
 % read input file
+[domain, param, fluidProp, bubbleList] = IOManager.readInputFile();
 
 % initialize variables (grid, velocity, pressure, and force)
 
 % initialize the physical properties
 
 % set the initial front (gas-liquid interface)
-centerX = 0.2;
-centerY = 0.3;
-radius = 1;
-point = 100;
-bub = Bubble(centerX, centerY, radius, point);
 
 % start time-loop
 
