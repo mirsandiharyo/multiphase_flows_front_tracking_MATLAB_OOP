@@ -5,6 +5,8 @@ classdef Domain
         ly
         nx
         ny
+        dx
+        dy
         gravx
         gravy
     end
@@ -18,6 +20,8 @@ classdef Domain
             obj.ny = ny;
             obj.gravx = gravx;
             obj.gravy = gravy;
+            obj.dx = lx/nx;
+            obj.dy = ly/ny;
         end
     end
 end
