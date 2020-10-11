@@ -7,8 +7,10 @@
 % rising in a rectangular box.
 % Created by: Haryo Mirsandi
 
-%% initialization
-% clean output folder
+%% Initialization
+% Clean output folder
+io_manager.create_dir;
+io_manager.clean_dir;
 
 % read input file
 
