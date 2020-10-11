@@ -9,8 +9,8 @@
 
 %% Initialization
 % Clean output folder
-io_manager.create_dir;
-io_manager.clean_dir;
+IOManager.createDir;
+IOManager.cleanDir;
 
 % read input file
 
@@ -19,6 +19,11 @@ io_manager.clean_dir;
 % initialize the physical properties
 
 % set the initial front (gas-liquid interface)
+centerX = 0.2;
+centerY = 0.3;
+radius = 1;
+point = 100;
+bub = Bubble(centerX, centerY, radius, point);
 
 % start time-loop
 

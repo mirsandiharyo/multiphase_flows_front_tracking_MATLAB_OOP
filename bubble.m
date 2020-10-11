@@ -1,24 +1,24 @@
 % Bubble class.
-classdef bubble
+classdef Bubble
     properties(SetAccess = private)
-       center_x
-       center_y
+       centerX
+       centerY
        radius
        point
        x
        y
-       x_old
-       y_old
+       xOld
+       yOld
     end
     
     methods
         % Initialize the bubble.
-        function obj = bubble(center_x, center_y, radius, point)
-            obj.center_x = center_x;
-            obj.center_y = center_y;
+        function obj = Bubble(centerX, centerY, radius, point)
+            obj.centerX = centerX;
+            obj.centerY = centerY;
             obj.radius = radius;
             obj.point = point;
-            [obj.x, obj.y, obj.x_old, obj.y_old] = ...
+            [obj.x, obj.y, obj.xOld, obj.yOld] = ...
             deal(zeros(1,obj.point+2));
         end
     end
