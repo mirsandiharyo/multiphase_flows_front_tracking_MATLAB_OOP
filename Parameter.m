@@ -1,4 +1,4 @@
-% Domain class.
+% Parameter class.
 classdef Parameter
     properties(SetAccess = private)
         nstep
