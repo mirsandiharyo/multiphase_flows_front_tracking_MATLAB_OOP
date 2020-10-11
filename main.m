@@ -6,7 +6,8 @@
 % predictor-corrector method. The code can be used to simulate a bubble 
 % rising in a rectangular box.
 % Created by: Haryo Mirsandi
-
+clear;
+close all;
 %% Initialization
 % Clean output folder
 IOManager.createDir;
@@ -16,8 +17,12 @@ IOManager.cleanDir;
 [domain, param, fluidProp, bubbleList] = IOManager.readInputFile();
 
 % initialize variables (grid, velocity, pressure, and force)
+face = Face(domain);
+center = Center(domain);
 
-% initialize the physical properties
+% initialize the physical properties inside the domain
+fluid = Fluid(domain, fluidProp);
+fluid.initializeDomain(domain, center, bubbleList, fluidProp);
 
 % set the initial front (gas-liquid interface)
 
