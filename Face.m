@@ -43,5 +43,20 @@ classdef Face < handle
            [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, domain.ny+2)); 
         end
         
+        %% Update the tangential velocity at boundaries.
+        function updateWallVelocity(obj, domain)
+            % The domain is currently assumed as a box with no-slip boundary
+            % condition.
+            uSouth = 0;
+            uNorth = 0;
+            vWest = 0;
+            vEast = 0;
+            obj.u(1:domain.nx+1,1) = 2*uSouth-obj.u(1:domain.nx+1,2);
+            obj.u(1:domain.nx+1,domain.ny+2) = ...
+                2*uNorth-obj.u(1:domain.nx+1,domain.ny+1);
+            obj.v(1,1:domain.ny+1) = 2*vWest -obj.v(2,1:domain.ny+1);
+            obj.v(domain.nx+2,1:domain.ny+1) = ...
+                2*vEast -obj.v(domain.nx+1,1:domain.ny+1);
+        end
     end
 end

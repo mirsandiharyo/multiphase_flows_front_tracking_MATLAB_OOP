@@ -51,7 +51,8 @@ for nstep=1:param.nstep
         end 
             
         % update the tangential velocity at boundaries
-
+        face.updateWallVelocity(domain);
+        
         % calculate the (temporary) velocity
 
         % solve pressure
