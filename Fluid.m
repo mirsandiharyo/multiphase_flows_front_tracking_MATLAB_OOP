@@ -8,7 +8,7 @@ classdef Fluid < handle
     end
     
     methods
-        % Initialize the density and viscosity fields using the properties
+        %% Initialize the density and viscosity fields using the properties
         % from continuous phase.
         function obj = Fluid(domain, fluidProp)
             [obj.rho, obj.rhoOld] = ...
@@ -17,7 +17,7 @@ classdef Fluid < handle
             deal(zeros(domain.nx+2, domain.ny+2)+fluidProp.contMu);
         end
         
-        % Set the fluid properties inside the discrete phase with an initial
+        %% Set the fluid properties inside the discrete phase with an initial
         % spherical shape. 
         function initializeDomain(obj, domain, center, bubbleList, fluidProp)
             for i=2:domain.nx+1
@@ -34,5 +34,10 @@ classdef Fluid < handle
             end            
         end
         
+        %% Store old variables for second order scheme.
+        function storeOldVariables(obj)
+            obj.rhoOld = obj.rho;
+            obj.muOld = obj.mu;
+        end
     end
 end

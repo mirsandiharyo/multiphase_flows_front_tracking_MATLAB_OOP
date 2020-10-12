@@ -35,7 +35,14 @@ IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
 
 %% start time loop
 for nstep=1:param.nstep
+    
     % store second order variables
+    face.storeOldVariables();
+    fluid.storeOldVariables();
+    for n=1:length(bubbleList)
+        bubbleList{n}.storeOldVariables();
+    end
+
         % calculate the surface tension force at the front (lagrangian grid)
         % and distribute it to eulerian grid
 

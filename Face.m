@@ -1,5 +1,5 @@
 % Face class.
-classdef Face
+classdef Face < handle
     properties(SetAccess = private)
         u
         uOld
@@ -12,7 +12,7 @@ classdef Face
     end
     
     methods
-        % Initialize variables stored at cell Face (liquid is at rest at
+        %% Initialize variables stored at cell Face (liquid is at rest at
         % the beginning).
         function obj = Face(domain)
             % velocity in x-direction
@@ -22,5 +22,12 @@ classdef Face
             % forces
             [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, domain.ny+2));
         end
+        
+        %% Store old variables for second order scheme.
+        function storeOldVariables(obj)
+            obj.uOld = obj.u;
+            obj.vOld = obj.v;
+        end
+        
     end
 end
