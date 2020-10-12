@@ -6,8 +6,7 @@
 % predictor-corrector method. The code can be used to simulate a bubble 
 % rising in a rectangular box.
 % Created by: Haryo Mirsandi
-clear;
-close all;
+
 %% Initialization
 % Clean output folder
 IOManager.createDir;
@@ -43,6 +42,9 @@ for nstep=1:param.nstep
         bubbleList{n}.storeOldVariables();
     end
 
+    % Second order loop
+    for substep=1:2
+        
         % calculate the surface tension force at the front (lagrangian grid)
         % and distribute it to eulerian grid
         face.initializeForce(domain);   
@@ -54,10 +56,13 @@ for nstep=1:param.nstep
         face.updateWallVelocity(domain);
         
         % calculate the (temporary) velocity
-
+        face.calculateTemporaryVelocity(param, domain, fluidProp, fluid);
+        
         % solve pressure
+        center.solvePressure(domain, param, fluid, face);
         
         % correct the velocity by adding the pressure gradient
+        face.correctVelocity(domain, param, center, fluid);
         
         % update the front location 
         for n=1:length(bubbleList)
@@ -67,7 +72,7 @@ for nstep=1:param.nstep
         % update physical properties
         fluid.updateDensity(param, domain, bubbleList, fluidProp);
         fluid.updateViscosity(fluidProp);
-    % end
+    end
     
     % store second order variables
     face.store2ndOrderVariables();
