@@ -6,18 +6,20 @@ classdef Parameter
         maxIter
         maxErr
         beta
-        outFreq
+        outputFreq
+        time
     end
     
     methods
         % Initialize the simulation parameters.
-        function obj = Parameter(nstep, dt, maxIter, maxErr, beta, outFreq)
+        function obj = Parameter(nstep, dt, maxIter, maxErr, beta, outputFreq)
             obj.nstep = nstep;
             obj.dt = dt;
             obj.maxIter = maxIter;
             obj.maxErr = maxErr;
             obj.beta = beta;
-            obj.outFreq = outFreq;
+            obj.outputFreq = outputFreq;
+            obj.time = 0.0;
         end
     end
 end
