@@ -73,7 +73,32 @@ classdef Bubble < handle
             obj.x(obj.point+2) = obj.x(2);
             obj.y(obj.point+2) = obj.y(2);
         end
-        
+
+        %% Advect the location of marker points using the interpolated velocity field.
+        function updateFrontLocation(obj, face, param, domain)
+            % interpolate the velocity from the eulerian grid to the 
+            % location of marker point   
+            [uX, uY] = deal(zeros(1,obj.point+2));
+            for i=2:obj.point+1
+                % interpolate velocity in x-direction
+                uX(i) = obj.interpolateVelocity(domain, face.u, obj.x(i), ...
+                    obj.y(i), 1);
+                % interpolate velocity in y-direction
+                uY(i) = obj.interpolateVelocity(domain, face.v, obj.x(i), ...
+                    obj.y(i), 2);
+            end
+
+            % advect the marker point 
+            for i=2:obj.point+1
+                obj.x(i) = obj.x(i)+param.dt*uX(i);
+                obj.y(i) = obj.y(i)+param.dt*uY(i);
+            end
+            obj.x(1) = obj.x(obj.point+1);
+            obj.y(1) = obj.y(obj.point+1);
+            obj.x(obj.point+2) = obj.x(2);
+            obj.y(obj.point+2) = obj.y(2);              
+        end
+    
     end
     
     methods (Static)
@@ -106,5 +131,20 @@ classdef Bubble < handle
             cell(indexX+1,indexY+1) = cell(indexX+1,indexY+1) + ...
                 coeffX*coeffY*value/d1/d2;
         end
+        
+        %% Interpolate velocities located on eulerian cells to a lagrangian 
+        % marker point.
+        function vel = interpolateVelocity(domain, faceVel, x, y, axis)
+            % get the eulerian cell index
+            [indexX, indexY] = domain.getCellIndex(x, y, axis); 
+            % calculate the weighing coefficient 
+            [coeffX, coeffY] = domain.getWeightCoeff(x, y, indexX, indexY, axis); 
+            % interpolate the surrounding velocities to the marker location
+            vel = (1.0-coeffX)*(1.0-coeffY)*faceVel(indexX  ,indexY  )+ ...
+                       coeffX *(1.0-coeffY)*faceVel(indexX+1,indexY  )+ ...
+                  (1.0-coeffX)*     coeffY *faceVel(indexX  ,indexY+1)+ ...
+                       coeffX *     coeffY *faceVel(indexX+1,indexY+1);            
+        end
+        
     end
 end

@@ -55,7 +55,10 @@ for nstep=1:param.nstep
         % correct the velocity by adding the pressure gradient
         
         % update the front location 
-
+        for n=1:length(bubbleList)
+            bubbleList{n}.updateFrontLocation(face, param, domain);
+        end 
+        
         % update physical properties
         fluid.updateDensity(param, domain, bubbleList, fluidProp);
         fluid.updateViscosity(fluidProp);
