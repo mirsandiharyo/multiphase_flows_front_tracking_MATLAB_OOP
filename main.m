@@ -29,9 +29,9 @@ for n=1:length(bubbleList)
     bubbleList{n}.initializeFront();
 end
                    
-% start time-loop
-
 % visualize the initial condition
+IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
+            fluidProp, param.time, 0)
 
 %% start time loop
     % store second order variables

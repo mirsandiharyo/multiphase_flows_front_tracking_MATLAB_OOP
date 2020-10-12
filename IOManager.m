@@ -1,17 +1,17 @@
 % Input output manager.
 classdef IOManager    
     methods(Static)
-        % Clean output directory.
+        %% Clean output directory.
         function cleanDir
             delete output/bub_*;
         end
         
-        % Create output directory.
+        %% Create output directory.
         function createDir
             mkdir output;
         end
         
-        % Read simulation parameters from the input file
+        %% Read simulation parameters from the input file.
         function [domain, param, fluidProp, bubbleList] = readInputFile
             disp('choose the input file (.txt)');
             [inputName, filePath] = uigetfile('.txt');
@@ -38,7 +38,7 @@ classdef IOManager
             readLine = fgetl(fid);
             readLine = fgetl(fid);
             
-            % Numerical parameters
+            % Numerical parameters.
             readLine = regexp(fgetl(fid), '=', 'split');
             lx = str2double(readLine{2});
             readLine = regexp(fgetl(fid), '=', 'split');
@@ -92,5 +92,53 @@ classdef IOManager
             fclose(fid);
         end
         
+        %% Visualize the phase fraction field, velocity vector, velocity 
+        %  contour and marker points
+        function visualizeResults(domain, face, center, fluid, bubbleList, ...
+            fluidProp, time, nstep)
+            % calculate velocity at cell center 
+            uCenter(1:domain.nx+1,1:domain.ny+1) = 0.5* ...
+                (face.u(1:domain.nx+1,2:domain.ny+2)+ ...
+                 face.u(1:domain.nx+1,1:domain.ny+1));
+            vCenter(1:domain.nx+1,1:domain.ny+1) = 0.5* ...
+                (face.v(2:domain.nx+2,1:domain.ny+1)+ ...
+                 face.v(1:domain.nx+1,1:domain.ny+1));
+            velMag = sqrt(uCenter.^2 + vCenter.^2);
+            % calculate phase fraction     
+            alpha = bsxfun(@minus,fluid.rho,fluidProp.contRho);
+            alpha = bsxfun(@times,alpha,1/(fluidProp.dispRho-fluidProp.contRho));
+            % create the grid
+            gridX = linspace(0, domain.nx, domain.nx+1)*domain.dx;
+            gridY = linspace(0, domain.ny, domain.ny+1)*domain.dy;
+            hold off, 
+            % plot contour of velocity magnitude    
+            contour(gridX,gridY,flipud(rot90(velMag)),'linewidth',1.5), ...
+            axis equal, axis([0 domain.lx 0 domain.ly]);
+            hold on;
+            % plot phase field
+            imagesc(center.x,center.y,flipud(rot90(alpha)),'AlphaData',0.9),
+            colormap('jet'),colorbar,caxis([0 1]);
+            % set colorbar title
+            ph = colorbar;
+            colorTitleHandle = get(ph,'Title');
+            caption = 'Phase fraction';
+            set(colorTitleHandle ,'String',caption,'FontSize', 10);
+            % plot velocity vector    
+            quiver(gridX,gridY,flipud(rot90(uCenter)),flipud(rot90(vCenter)),'w');
+            % plot the marker points
+            for n=1:length(bubbleList)
+                h = plot(bubbleList{n}.x(1:bubbleList{n}.point), ...
+                         bubbleList{n}.y(1:bubbleList{n}.point), ...
+                         'k','linewidth',2);
+            end
+            % set title
+            caption = sprintf('Time = %f s', time);
+            title(caption, 'FontSize', 10);     
+            pause(0.001)
+            % save the plot     
+            caption = sprintf('output/bub_%03d.png',nstep);
+            saveas(h, caption);
+        end
+
     end
 end
