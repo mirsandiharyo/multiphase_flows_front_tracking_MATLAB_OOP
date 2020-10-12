@@ -41,5 +41,37 @@ classdef Bubble < handle
             obj.x = 0.5*(obj.x+obj.xOld);
             obj.y = 0.5*(obj.y+obj.yOld);            
         end
+        
+        %% Restructure the front to maintain the quality of the interface.
+        function restructure_front(obj, domain)
+            obj.xOld = obj.x;
+            obj.yOld = obj.y;
+            j = 1;
+            for i=2:obj.point+1
+                % check the distance
+                dst = sqrt(((obj.xOld(i)-obj.x(j))/domain.dx)^2 + ...
+                           ((obj.yOld(i)-obj.y(j))/domain.dy)^2);        
+                if (dst > 0.5) % too big
+                    % add marker points
+                    j = j+1;
+                    obj.x(j) = 0.5*(obj.xOld(i)+obj.x(j-1));
+                    obj.y(j) = 0.5*(obj.yOld(i)+obj.y(j-1));
+                    j = j+1;
+                    obj.x(j) = obj.xOld(i);
+                    obj.y(j) = obj.yOld(i);
+                elseif (dst < 0.25) % too small
+                    % do nothing  
+                else
+                    j = j+1;
+                    obj.x(j) = obj.xOld(i);
+                    obj.y(j) = obj.yOld(i);
+                end
+            end
+            obj.point = j-1;
+            obj.x(1) = obj.x(obj.point+1);
+            obj.y(1) = obj.y(obj.point+1);
+            obj.x(obj.point+2) = obj.x(2);
+            obj.y(obj.point+2) = obj.y(2);
+        end
     end
 end

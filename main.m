@@ -68,7 +68,10 @@ for nstep=1:param.nstep
     end 
     
     % restructure the front
-    
+    for n=1:length(bubbleList)
+        bubbleList{n}.restructure_front();
+    end     
+
     % visualize the results
     param.time = param.time+param.dt;
     if mod(nstep, param.out_freq) == 0
