@@ -7,8 +7,11 @@ classdef Face < handle
         v
         vOld
         vTemp
+    end
+    
+    properties
         forceX
-        forceY
+        forceY        
     end
     
     methods
@@ -34,5 +37,11 @@ classdef Face < handle
            obj.u = 0.5*(obj.u+obj.uOld);
            obj.v = 0.5*(obj.v+obj.vOld);
         end
+        
+        %% Set the forces to zero.
+        function initializeForce(obj, domain)
+           [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, domain.ny+2)); 
+        end
+        
     end
 end

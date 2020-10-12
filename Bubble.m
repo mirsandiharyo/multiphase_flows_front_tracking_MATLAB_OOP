@@ -99,10 +99,40 @@ classdef Bubble < handle
             obj.y(obj.point+2) = obj.y(2);              
         end
     
+        %% Calculate the surface tension force on the lagrangian grid and 
+        % distribute it to the surrounding eulerian grid cells.
+        function face = calculateSurfaceTension(obj, domain, fluidProp, face)
+            % initialize the variables to store the tangent vector
+            [tanX, tanY] = deal(zeros(obj.point+2, obj.point+2));
+
+            % calculate the tangent vector
+            for i=1:obj.point+1
+                dist = sqrt((obj.x(i+1)-obj.x(i))^2 + ...
+                            (obj.y(i+1)-obj.y(i))^2);
+                tanX(i) = (obj.x(i+1)-obj.x(i))/dist;
+                tanY(i) = (obj.y(i+1)-obj.y(i))/dist;
+            end
+            tanX(obj.point+2) = tanX(2);
+            tanY(obj.point+2) = tanY(2);
+
+            % distribute the surface tension force to the eulerian grid
+            for i=2:obj.point+1
+                % force in x-direction
+                forceX = fluidProp.sigma*(tanX(i)-tanX(i-1));
+                face.forceX = obj.distributeLagrangianToEulerian(domain, ...
+                    face.forceX, obj.x(i), obj.y(i), forceX, 1);
+
+                % force in y-direction
+                forceY = fluidProp.sigma*(tanY(i)-tanY(i-1));
+                face.forceY = obj.distributeLagrangianToEulerian(domain, ...
+                    face.forceY, obj.x(i), obj.y(i), forceY, 2);
+            end   
+        end
     end
     
     methods (Static)
-        %% Distribute a value from a lagrangian point to neighboring eulerian cells.
+        %% Distribute a value from a lagrangian point to neighboring 
+        % eulerian cells.
         function cell = distributeLagrangianToEulerian(domain, cell, x, y, ...
                 value, axis)
             % assign the grid size

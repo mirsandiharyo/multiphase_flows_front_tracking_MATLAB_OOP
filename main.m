@@ -45,7 +45,11 @@ for nstep=1:param.nstep
 
         % calculate the surface tension force at the front (lagrangian grid)
         % and distribute it to eulerian grid
-
+        face.initializeForce(domain);   
+        for n=1:length(bubbleList)
+            bubbleList{n}.calculateSurfaceTension(domain, fluidProp, face);
+        end 
+            
         % update the tangential velocity at boundaries
 
         % calculate the (temporary) velocity
