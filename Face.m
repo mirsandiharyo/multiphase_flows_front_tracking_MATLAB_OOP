@@ -29,5 +29,10 @@ classdef Face < handle
             obj.vOld = obj.v;
         end
         
+        %% Store second order variables.
+        function store2ndOrderVariables(obj)
+           obj.u = 0.5*(obj.u+obj.uOld);
+           obj.v = 0.5*(obj.v+obj.vOld);
+        end
     end
 end

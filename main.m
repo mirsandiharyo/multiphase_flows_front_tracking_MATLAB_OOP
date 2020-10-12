@@ -59,7 +59,13 @@ for nstep=1:param.nstep
         % update physical properties
   
     % end
+    
     % store second order variables
+    face.store2ndOrderVariables();
+    fluid.store2ndOrderVariables();
+    for n=1:length(bubbleList)
+        bubbleList{n}.store2ndOrderVariables();
+    end 
     
     % restructure the front
     

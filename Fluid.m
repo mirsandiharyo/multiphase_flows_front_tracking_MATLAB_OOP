@@ -39,5 +39,11 @@ classdef Fluid < handle
             obj.rhoOld = obj.rho;
             obj.muOld = obj.mu;
         end
+        
+        %% Store second order variables.
+        function store2ndOrderVariables(obj)
+           obj.rho = 0.5*(obj.rho+obj.rhoOld);
+           obj.mu = 0.5*(obj.mu+obj.muOld);
+        end
     end
 end

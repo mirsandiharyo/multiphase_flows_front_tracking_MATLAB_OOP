@@ -35,5 +35,11 @@ classdef Bubble < handle
             obj.xOld = obj.x;
             obj.yOld = obj.y;
         end
+        
+        %% Store second order variables.
+        function store2ndOrderVariables(obj)
+            obj.x = 0.5*(obj.x+obj.xOld);
+            obj.y = 0.5*(obj.y+obj.yOld);            
+        end
     end
 end
