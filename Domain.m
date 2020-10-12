@@ -1,4 +1,5 @@
-% Domain class.
+% Domain class contains properties and methods related to the computational 
+% domain.
 classdef Domain
     properties(SetAccess = private)
         lx
@@ -12,8 +13,9 @@ classdef Domain
     end
     
     methods
-        %% Initialize the domain parameters.
+        %% 
         function obj = Domain(lx, ly, nx, ny, gravx, gravy)
+        % Initialize the domain parameters.    
             obj.lx = lx;
             obj.ly = ly;
             obj.nx = nx;
@@ -24,9 +26,10 @@ classdef Domain
             obj.dy = ly/ny;
         end
         
-        %% Fetch the indices of the eulerian cell located on the left of a 
-        % given point.
+        %%
         function[indexX, indexY] = getCellIndex(obj, x, y, axis)
+        % Fetch the indices of the eulerian cell located on the left of a 
+        % given point.    
             switch axis
                 case 1 % x-dir
                     indexX = floor(x/obj.dx)+1;
@@ -39,9 +42,11 @@ classdef Domain
             end
         end
             
-        %% Calculate the weight coefficients of a point with respect to its 
-        % location inside the eulerian cell.
-        function[coeffX, coeffY] = getWeightCoeff(obj, x, y, indexX, indexY, axis)
+        %%
+        function[coeffX, coeffY] = getWeightCoeff(obj, x, y, indexX, ...
+                indexY, axis)
+        % Calculate the weight coefficients of a point with respect to its 
+        % location inside the eulerian cell.    
             switch axis
                 case 1 % x-dir 
                     coeffX = x/obj.dx-indexX+1;

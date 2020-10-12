@@ -1,4 +1,5 @@
-% Fluid properties class.
+% FluidProp class contains properties and methods related to the 
+% fluid properties.
 classdef FluidProp
     properties(SetAccess = private)
         contRho
@@ -9,13 +10,14 @@ classdef FluidProp
     end
     
     methods
-        % Initialize the fluid properties of the continuous and 
-        % dispersed phases.
+        %%
         function obj = FluidProp(contRho, contMu, dispRho, dispMu, sigma)
-            % Continuous phase
+        % Initialize the fluid properties of the continuous and the
+        % dispersed phases.    
+            % Continuous phase.
             obj.contRho = contRho;
             obj.contMu = contMu;
-            % Dispersed phase            
+            % Dispersed phase.           
             obj.dispRho = dispRho;
             obj.dispMu = dispMu;
             obj.sigma = sigma;

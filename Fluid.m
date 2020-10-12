@@ -1,4 +1,5 @@
-% Fluid class.
+% Fluid class contains properties and methods related to the 
+% density and viscosity fields.
 classdef Fluid < handle
     properties(SetAccess = private)
         rho
@@ -8,18 +9,21 @@ classdef Fluid < handle
     end
     
     methods
-        %% Initialize the density and viscosity fields using the properties
-        % from continuous phase.
+        %%
         function obj = Fluid(domain, fluidProp)
+        % Initialize the density and viscosity fields using the properties
+        % from continuous phase.    
             [obj.rho, obj.rhoOld] = ...
             deal(zeros(domain.nx+2, domain.ny+2)+fluidProp.contRho);
             [obj.mu, obj.muOld] =  ...
             deal(zeros(domain.nx+2, domain.ny+2)+fluidProp.contMu);
         end
         
-        %% Set the fluid properties inside the discrete phase with an initial
-        % spherical shape. 
-        function initializeDomain(obj, domain, center, bubbleList, fluidProp)
+        %%
+        function initializeDomain(obj, domain, center, bubbleList, ...
+                fluidProp)
+        % Set the fluid properties inside the discrete phase with an initial
+        % spherical shape.    
             for i=2:domain.nx+1
                for j=2:domain.ny+1
                    for n=1:length(bubbleList)
@@ -34,28 +38,29 @@ classdef Fluid < handle
             end            
         end
         
-        %% Store old variables for second order scheme.
+        %%
         function storeOldVariables(obj)
+        % Store old variables for second order scheme.    
             obj.rhoOld = obj.rho;
             obj.muOld = obj.mu;
         end
         
-        %% Store second order variables.
+        %%
         function store2ndOrderVariables(obj)
+        % Store second order variables.    
            obj.rho = 0.5*(obj.rho+obj.rhoOld);
            obj.mu = 0.5*(obj.mu+obj.muOld);
         end
         
-        %% Update the density field using the density jump at the lagrangian 
-        % interface. Linear averaging is used to get the value at each cell.
+        %%
         function updateDensity(obj, param, domain, bubbleList, fluidProp)
-            % initialize the variables to store the density jump
+        % Update the density field using the density jump at the lagrangian 
+        % interface. Linear averaging is used to get the value at each cell.    
             [faceX, faceY] = deal(zeros(domain.nx+2, domain.ny+2));
-            
-            % distribute the density jump to the eulerian grid
+            % Distribute the density jump to the eulerian grid.
             for n=1:length(bubbleList)
                 for i=2:bubbleList{n}.point+1
-                    % density jump in x-direction
+                    % Density jump in x-direction.
                     forceX = -0.5*(bubbleList{n}.y(i+1)- ...
                                    bubbleList{n}.y(i-1))* ...
                                   (fluidProp.dispRho-fluidProp.contRho);  
@@ -63,7 +68,7 @@ classdef Fluid < handle
                             domain, faceX, bubbleList{n}.x(i), ...
                             bubbleList{n}.y(i), forceX, 1);
 
-                    % density jump in y-direction
+                    % Density jump in y-direction.
                     forceY = 0.5*(bubbleList{n}.x(i+1)- ...
                                   bubbleList{n}.x(i-1))* ...
                                  (fluidProp.dispRho-fluidProp.contRho); 
@@ -73,7 +78,7 @@ classdef Fluid < handle
                 end
             end
             
-            % construct the density field using SOR
+            % Construct the density field using SOR.
             for iter=1:param.maxIter
                 oldRho = obj.rho;
                 for i=2:domain.nx+1
@@ -95,8 +100,9 @@ classdef Fluid < handle
         end
         
         
-        %% Update the viscosity field using harmonic averaging.
+        %%
         function updateViscosity(obj, fluidProp)
+        % Update the viscosity field using harmonic averaging.    
             obj.mu = bsxfun(@minus,obj.rho,fluidProp.contRho);
             obj.mu = bsxfun(@times,obj.mu, ...
                 (fluidProp.dispMu -fluidProp.contMu)/ ...

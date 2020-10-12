@@ -1,18 +1,21 @@
-% Input output manager.
+% IOManager class contains static methods for input and output.
 classdef IOManager    
     methods(Static)
-        %% Clean output directory.
+        %% 
         function cleanDir
+        % Clean output directory.    
             delete output/bub_*;
         end
         
-        %% Create output directory.
+        %%
         function createDir
+        % Create output directory.    
             mkdir output;
         end
         
-        %% Read simulation parameters from the input file.
+        %% 
         function [domain, param, fluidProp, bubbleList] = readInputFile
+        % Read simulation parameters from the input file.    
             disp('choose the input file (.txt)');
             [inputName, filePath] = uigetfile('.txt');
             originPath = pwd;
@@ -20,7 +23,7 @@ classdef IOManager
             fid = fopen(inputName);
             cd(originPath);
             
-            % Solver parameters
+            % Solver parameters.
             readLine = fgetl(fid); %#ok<*NASGU>
             readLine = regexp(fgetl(fid), '=', 'split');
             nstep = str2double(readLine{2});
@@ -54,8 +57,8 @@ classdef IOManager
             domain = Domain(lx, ly, nx, ny, gravx, gravy);
             readLine = fgetl(fid);
             
-            % Physical properties
-            % Dispersed phase
+            % Physical properties.
+            % Dispersed phase.
             readLine = fgetl(fid);
             readLine = fgetl(fid);    
             readLine = regexp(fgetl(fid), '=', 'split');
@@ -64,7 +67,7 @@ classdef IOManager
             dispMu = str2double(readLine{2});
             readLine = regexp(fgetl(fid), '=', 'split');
             sigma = str2double(readLine{2});
-            % Continuous phase
+            % Continuous phase.
             readLine = fgetl(fid);
             readLine = regexp(fgetl(fid), '=', 'split');
             contRho = str2double(readLine{2});
@@ -73,7 +76,7 @@ classdef IOManager
             fluidProp = FluidProp(contRho, contMu, dispRho, dispMu, sigma);
             readLine = fgetl(fid);
             
-            % Bubble size and location
+            % Bubble size and location.
             readLine = fgetl(fid);
             readLine = regexp(fgetl(fid), '=', 'split');
             numBubble = str2double(readLine{2});
@@ -92,11 +95,12 @@ classdef IOManager
             fclose(fid);
         end
         
-        %% Visualize the phase fraction field, velocity vector, velocity 
-        %  contour and marker points
+        %%
         function visualizeResults(domain, face, center, fluid, bubbleList, ...
             fluidProp, time, nstep)
-            % calculate velocity at cell center 
+        % Visualize the phase fraction field, velocity vector, velocity 
+        % contour and marker points.
+            % Calculate velocity at cell center.
             uCenter(1:domain.nx+1,1:domain.ny+1) = 0.5* ...
                 (face.u(1:domain.nx+1,2:domain.ny+2)+ ...
                  face.u(1:domain.nx+1,1:domain.ny+1));
@@ -104,38 +108,49 @@ classdef IOManager
                 (face.v(2:domain.nx+2,1:domain.ny+1)+ ...
                  face.v(1:domain.nx+1,1:domain.ny+1));
             velMag = sqrt(uCenter.^2 + vCenter.^2);
-            % calculate phase fraction     
+            
+            % Calculate phase fraction.    
             alpha = bsxfun(@minus,fluid.rho,fluidProp.contRho);
-            alpha = bsxfun(@times,alpha,1/(fluidProp.dispRho-fluidProp.contRho));
-            % create the grid
+            alpha = bsxfun(@times,alpha,1/ ...
+                          (fluidProp.dispRho-fluidProp.contRho));
+            
+            % Create the grid.
             gridX = linspace(0, domain.nx, domain.nx+1)*domain.dx;
             gridY = linspace(0, domain.ny, domain.ny+1)*domain.dy;
             hold off, 
-            % plot contour of velocity magnitude    
+            
+            % Plot contour of velocity magnitude. 
             contour(gridX,gridY,flipud(rot90(velMag)),'linewidth',1.5), ...
             axis equal, axis([0 domain.lx 0 domain.ly]);
             hold on;
-            % plot phase field
+            
+            % Plot the phase field.
             imagesc(center.x,center.y,flipud(rot90(alpha)),'AlphaData',0.9),
             colormap('jet'),colorbar,caxis([0 1]);
-            % set colorbar title
+            
+            % Set colorbar title.
             ph = colorbar;
             colorTitleHandle = get(ph,'Title');
             caption = 'Phase fraction';
             set(colorTitleHandle ,'String',caption,'FontSize', 10);
-            % plot velocity vector    
-            quiver(gridX,gridY,flipud(rot90(uCenter)),flipud(rot90(vCenter)),'w');
-            % plot the marker points
+            
+            % Plot velocity vector.
+            quiver(gridX,gridY,flipud(rot90(uCenter)), ...
+                flipud(rot90(vCenter)),'w');
+            
+            % Plot the marker points.
             for n=1:length(bubbleList)
                 h = plot(bubbleList{n}.x(1:bubbleList{n}.point), ...
                          bubbleList{n}.y(1:bubbleList{n}.point), ...
                          'k','linewidth',2);
             end
-            % set title
+            
+            % Set title.
             caption = sprintf('Time = %f s', time);
             title(caption, 'FontSize', 10);     
             pause(0.001)
-            % save the plot     
+            
+            % Save the plot.  
             caption = sprintf('output/bub_%03d.png',nstep);
             saveas(h, caption);
         end

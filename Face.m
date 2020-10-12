@@ -1,4 +1,5 @@
-% Face class.
+% Face class contains properties and methods related to the 
+% variables stored in cell face.
 classdef Face < handle
     properties(SetAccess = private)
         u
@@ -15,38 +16,45 @@ classdef Face < handle
     end
     
     methods
-        %% Initialize variables stored at cell Face (liquid is at rest at
-        % the beginning).
+        %%
         function obj = Face(domain)
-            % velocity in x-direction
-            [obj.u, obj.uOld, obj.uTemp] = deal(zeros(domain.nx+1, domain.ny+2));
-            % velocity in y-direction
-            [obj.v, obj.vOld, obj.vTemp] = deal(zeros(domain.nx+2, domain.ny+1));
-            % forces
-            [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, domain.ny+2));
+        % Initialize variables stored at cell Face (liquid is at rest at
+        % the beginning).    
+            % Velocities in x-direction.
+            [obj.u, obj.uOld, obj.uTemp] = deal(zeros(domain.nx+1, ...
+                domain.ny+2));
+            % Velocities in y-direction.
+            [obj.v, obj.vOld, obj.vTemp] = deal(zeros(domain.nx+2, ...
+                domain.ny+1));
+            % Forces in x and y directions.
+            [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, ...
+                domain.ny+2));
         end
         
-        %% Store old variables for second order scheme.
+        %% 
         function storeOldVariables(obj)
+        % Store old variables for second order scheme.    
             obj.uOld = obj.u;
             obj.vOld = obj.v;
         end
         
-        %% Store second order variables.
+        %%
         function store2ndOrderVariables(obj)
+        % Store second order variables.    
            obj.u = 0.5*(obj.u+obj.uOld);
            obj.v = 0.5*(obj.v+obj.vOld);
         end
         
-        %% Set the forces to zero.
+        %% 
         function initializeForce(obj, domain)
+        % Set the forces to zero.    
            [obj.forceX, obj.forceY] = deal(zeros(domain.nx+2, domain.ny+2)); 
         end
         
-        %% Update the tangential velocity at boundaries.
+        %% 
         function updateWallVelocity(obj, domain)
-            % The domain is currently assumed as a box with no-slip boundary
-            % condition.
+        % Update the tangential velocity at boundaries. The domain is 
+        % assumed as a box with no-slip boundary condition.
             uSouth = 0;
             uNorth = 0;
             vWest = 0;
@@ -59,11 +67,12 @@ classdef Face < handle
                 2*vEast -obj.v(domain.nx+1,1:domain.ny+1);
         end
         
-        %% Calculate the temporary velocities without accounting for 
-        % the pressure (first step of the second order projection method).
+        %%
         function calculateTemporaryVelocity(obj, param, domain, ...
                 fluidProp, fluid)
-            % temporary u velocity (advection term)
+        % Calculate the temporary velocities without accounting for 
+        % the pressure (first step of the second order projection method).    
+            % Temporary u velocity (advection term).
             for i=2:domain.nx
                 for j=2:domain.ny+1
                     obj.uTemp(i,j) = obj.u(i,j)+param.dt*(-0.25* ...
@@ -76,11 +85,12 @@ classdef Face < handle
                            obj.forceX(i,j)/ ...
                           (0.5*(fluid.rho(i+1,j)+fluid.rho(i,j)))- ...
                           (1.0 -fluidProp.contRho/ ...
-                          (0.5*(fluid.rho(i+1,j)+fluid.rho(i,j))))*domain.gravx);
+                          (0.5*(fluid.rho(i+1,j)+fluid.rho(i,j))))* ...
+                          domain.gravx);
                 end
             end
 
-            % temporary v velocity (advection term)
+            % Temporary v velocity (advection term).
             for i=2:domain.nx+1
                 for j=2:domain.ny
                     obj.vTemp(i,j) = obj.v(i,j)+param.dt*(-0.25* ...
@@ -93,17 +103,21 @@ classdef Face < handle
                            obj.forceY(i,j)/ ...
                           (0.5*(fluid.rho(i,j+1)+fluid.rho(i,j)))- ...
                           (1.0 -fluidProp.contRho/ ...
-                          (0.5*(fluid.rho(i,j+1)+fluid.rho(i,j))))*domain.gravy);
+                          (0.5*(fluid.rho(i,j+1)+fluid.rho(i,j))))* ...
+                          domain.gravy);
                 end
             end
 
-            % temporary u velocity (diffusion term)
+            % Temporary u velocity (diffusion term).
             for i=2:domain.nx
                 for j=2:domain.ny+1
-                    obj.uTemp(i,j) = obj.uTemp(i,j)+param.dt*((1./domain.dx)*2.* ...
-                    (fluid.mu(i+1,j  )*(1./domain.dx)*(obj.u(i+1,j  )-obj.u(i  ,j  )) - ... 
-                     fluid.mu(i  ,j  )*(1./domain.dx)*(obj.u(i  ,j  )-obj.u(i-1,j  )))+ ...
-                     (1./domain.dy)*(0.25* ...
+                    obj.uTemp(i,j) = obj.uTemp(i,j)+param.dt* ...
+                        ((1./domain.dx)*2.* ...
+                    (fluid.mu(i+1,j  )*(1./domain.dx)* ...
+                    (obj.u(i+1,j  )-obj.u(i  ,j  )) - ... 
+                     fluid.mu(i  ,j  )*(1./domain.dx)* ...
+                    (obj.u(i  ,j  )-obj.u(i-1,j  )))+ ...
+                    (1./domain.dy)*(0.25* ...
                     (fluid.mu(i  ,j  )+fluid.mu(i+1,j  )+ ...          
                      fluid.mu(i+1,j+1)+fluid.mu(i  ,j+1))* ...                              
                     ((1./domain.dy)*(obj.u(i  ,j+1)-obj.u(i  ,j  ))+ ... 
@@ -116,10 +130,11 @@ classdef Face < handle
                 end
             end
 
-            % temporary v velocity (diffusion term)
+            % Temporary v velocity (diffusion term).
             for i=2:domain.nx+1
                 for j=2:domain.ny
-                    obj.vTemp(i,j) = obj.vTemp(i,j)+param.dt*((1./domain.dx)*(0.25* ...
+                    obj.vTemp(i,j) = obj.vTemp(i,j)+param.dt* ...
+                        ((1./domain.dx)*(0.25* ...
                     (fluid.mu(i  ,j  )+fluid.mu(i+1,j  )+ ...
                      fluid.mu(i+1,j+1)+fluid.mu(i,j+1  ))* ...
                     ((1./domain.dy)*(obj.u(i  ,j+1)-obj.u(i  ,j  ))+ ...                    
@@ -129,16 +144,19 @@ classdef Face < handle
                     ((1./domain.dy)*(obj.u(i-1,j+1)-obj.u(i-1,j  ))+ ...
                      (1./domain.dx)*(obj.v(i  ,j  )-obj.v(i-1,j  ))))+ ...
                      (1./domain.dy)*2.* ...
-                    (fluid.mu(i  ,j+1)*(1./domain.dy)*(obj.v(i  ,j+1)-obj.v(i  ,j  ))- ...  
-                     fluid.mu(i  ,j  )*(1./domain.dy)*(obj.v(i  ,j  )-obj.v(i  ,j-1))))/ ...
+                    (fluid.mu(i  ,j+1)*(1./domain.dy)* ...
+                    (obj.v(i  ,j+1)-obj.v(i  ,j  ))- ...  
+                     fluid.mu(i  ,j  )*(1./domain.dy)* ...
+                    (obj.v(i  ,j  )-obj.v(i  ,j-1))))/ ...
                      (0.5*(fluid.rho(i,j+1)+fluid.rho(i,j)));                                   
                 end
             end
         end
         
-        %% Correct the velocity by adding the pressure gradient.
+        %%
         function correctVelocity(obj, domain, param, center, fluid)
-            % correct velocity in x-direction
+        % Correct the velocity by adding the pressure gradient.    
+            % Velocity in x-direction.
             for i=2:domain.nx
                 for j=2:domain.ny+1
                     obj.u(i,j) = obj.uTemp(i,j)-param.dt*(2.0/domain.dx)* ...
@@ -146,7 +164,7 @@ classdef Face < handle
                         (fluid.rho(i+1,j)+fluid.rho(i,j));
                 end
             end
-            % correct velocity in x-direction
+            % Velocity in y-direction.
             for i=2:domain.nx+1
                 for j=2:domain.ny
                     obj.v(i,j) = obj.vTemp(i,j)-param.dt*(2.0/domain.dy)* ...

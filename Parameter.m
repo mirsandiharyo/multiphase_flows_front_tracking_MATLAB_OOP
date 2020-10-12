@@ -1,4 +1,5 @@
-% Parameter class.
+% Parameter class contains properties and methods related to the 
+% computational parameters.
 classdef Parameter < handle
     properties(SetAccess = private)
         nstep
@@ -11,8 +12,10 @@ classdef Parameter < handle
     end
     
     methods
-        %% Initialize the simulation parameters.
-        function obj = Parameter(nstep, dt, maxIter, maxErr, beta, outputFreq)
+        %% 
+        function obj = Parameter(nstep, dt, maxIter, maxErr, beta, ...
+                outputFreq)
+        % Initialize the simulation parameters.    
             obj.nstep = nstep;
             obj.dt = dt;
             obj.maxIter = maxIter;
@@ -22,8 +25,9 @@ classdef Parameter < handle
             obj.time = 0.0;
         end
         
-        %% Increment the time.
+        %% 
         function incrementTime(obj)
+        % Increment the time.    
             obj.time = obj.time+obj.dt;
         end
     end

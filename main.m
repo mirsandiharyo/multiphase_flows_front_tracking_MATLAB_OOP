@@ -8,85 +8,85 @@
 % Created by: Haryo Mirsandi
 
 %% Initialization
-% Clean output folder
+% Clean output folder.
 IOManager.createDir;
 IOManager.cleanDir;
 
-% read input file
+% Read input file.
 [domain, param, fluidProp, bubbleList] = IOManager.readInputFile();
 
-% initialize variables (grid, velocity, pressure, and force)
+% Initialize variables (grid, velocity, pressure, and force).
 face = Face(domain);
 center = Center(domain);
 
-% initialize the physical properties inside the domain
+% Initialize the physical properties inside the domain.
 fluid = Fluid(domain, fluidProp);
 fluid.initializeDomain(domain, center, bubbleList, fluidProp);
 
-% set the initial front (gas-liquid interface)
+% Set the initial front (gas-liquid interface).
 for n=1:length(bubbleList)
     bubbleList{n}.initializeFront();
 end
                    
-% visualize the initial condition
+% Visualize the initial condition.
 IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
             fluidProp, param.time, 0)
 
-%% start time loop
+%% Start time loop
 for nstep=1:param.nstep
     
-    % store second order variables
+    % Store second order variables.
     face.storeOldVariables();
     fluid.storeOldVariables();
     for n=1:length(bubbleList)
         bubbleList{n}.storeOldVariables();
     end
 
-    % Second order loop
+    % Second order loop.
     for substep=1:2
         
-        % calculate the surface tension force at the front (lagrangian grid)
-        % and distribute it to eulerian grid
+        % Calculate the surface tension force at the front (lagrangian grid)
+        % and distribute it to eulerian grid.
         face.initializeForce(domain);   
         for n=1:length(bubbleList)
             bubbleList{n}.calculateSurfaceTension(domain, fluidProp, face);
         end 
             
-        % update the tangential velocity at boundaries
+        % Update the tangential velocity at boundaries.
         face.updateWallVelocity(domain);
         
-        % calculate the (temporary) velocity
+        % Calculate the (temporary) velocity.
         face.calculateTemporaryVelocity(param, domain, fluidProp, fluid);
         
-        % solve pressure
+        % Solve the pressure field.
         center.solvePressure(domain, param, fluid, face);
         
-        % correct the velocity by adding the pressure gradient
+        % Correct the velocity field by adding the pressure gradient.
         face.correctVelocity(domain, param, center, fluid);
         
-        % update the front location 
+        % Update the front location.
         for n=1:length(bubbleList)
             bubbleList{n}.updateFrontLocation(face, param, domain);
         end 
         
-        % update physical properties
+        % Update the physical properties.
         fluid.updateDensity(param, domain, bubbleList, fluidProp);
         fluid.updateViscosity(fluidProp);
     end
     
-    % store second order variables
+    % Store second order variables.
     face.store2ndOrderVariables();
     fluid.store2ndOrderVariables();
     for n=1:length(bubbleList)
         bubbleList{n}.store2ndOrderVariables();
     end 
     
-    % restructure the front
+    % Restructure the front.
     for n=1:length(bubbleList)
-        bubbleList{n}.restructure_front(domain);
+        bubbleList{n}.restructureFront(domain);
     end     
 
-    % visualize the results
+    % Visualize the results.
     param.incrementTime();
     if mod(nstep, param.outputFreq) == 0
         IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...

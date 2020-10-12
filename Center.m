@@ -1,4 +1,5 @@
-% Center class.
+% Center class contains properties and methods related to the 
+% variables stored in cell center (pressure).
 classdef Center < handle
     properties(SetAccess = private)
         x
@@ -7,21 +8,21 @@ classdef Center < handle
     end
     
     methods
-        %% Initialize variables stored at cell center.
+        %% 
         function obj = Center(domain)
-            % set the grid
+        % Initialize variables stored at cell center.    
             obj.x = linspace(-0.5, domain.nx+2-1.5, domain.nx+2)*domain.dx;
             obj.y = linspace(-0.5, domain.ny+2-1.5, domain.ny+2)*domain.dy;
-            % obj.pressure
             obj.pres = zeros(domain.nx+2, domain.ny+2);
         end
         
         
-        %% Calculate the pressure field.
+        %%
         function solvePressure(obj, domain, param, fluid, face)
-            % initialize variables
+        % Calculate the pressure field.    
             [temp1, temp2] = deal(zeros(domain.nx+2, domain.ny+2));
-            % calculate source term and the coefficient for obj.pressure
+            
+            % Calculate source term and the coefficient for pressure.
             rhoTemp = fluid.rho;
             largeNum = 1000;
             rhoTemp(1:domain.nx+2,1) = largeNum;
@@ -42,7 +43,7 @@ classdef Center < handle
                 end
             end
 
-            % construct the obj.pressure field using SOR
+            % Construct the pressure field using SOR.
             for it=1:param.maxIter
                 oldPres = obj.pres;
                 for i=2:domain.nx+1
