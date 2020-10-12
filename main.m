@@ -34,6 +34,7 @@ IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
             fluidProp, param.time, 0)
 
 %% start time loop
+for nstep=1:param.nstep
     % store second order variables
         % calculate the surface tension force at the front (lagrangian grid)
         % and distribute it to eulerian grid
@@ -56,7 +57,12 @@ IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
     % restructure the front
     
     % visualize the results
-
-%% end time-loop
+    param.time = param.time+param.dt;
+    if mod(nstep, param.out_freq) == 0
+        IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
+            fluidProp, param.time, nstep)
+    end
+end
+%% end time loop
 disp('program finished');
 
