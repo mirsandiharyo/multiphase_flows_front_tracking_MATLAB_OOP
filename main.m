@@ -69,12 +69,12 @@ for nstep=1:param.nstep
     
     % restructure the front
     for n=1:length(bubbleList)
-        bubbleList{n}.restructure_front();
+        bubbleList{n}.restructure_front(domain);
     end     
 
     % visualize the results
-    param.time = param.time+param.dt;
-    if mod(nstep, param.out_freq) == 0
+    param.incrementTime();
+    if mod(nstep, param.outputFreq) == 0
         IOManager.visualizeResults(domain, face, center, fluid, bubbleList, ...
             fluidProp, param.time, nstep)
     end

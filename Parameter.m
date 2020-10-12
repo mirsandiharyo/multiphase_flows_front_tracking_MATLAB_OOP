@@ -1,5 +1,5 @@
 % Parameter class.
-classdef Parameter
+classdef Parameter < handle
     properties(SetAccess = private)
         nstep
         dt
@@ -11,7 +11,7 @@ classdef Parameter
     end
     
     methods
-        % Initialize the simulation parameters.
+        %% Initialize the simulation parameters.
         function obj = Parameter(nstep, dt, maxIter, maxErr, beta, outputFreq)
             obj.nstep = nstep;
             obj.dt = dt;
@@ -20,6 +20,11 @@ classdef Parameter
             obj.beta = beta;
             obj.outputFreq = outputFreq;
             obj.time = 0.0;
+        end
+        
+        %% Increment the time.
+        function incrementTime(obj)
+            obj.time = obj.time+obj.dt;
         end
     end
 end
