@@ -57,7 +57,8 @@ for nstep=1:param.nstep
         % update the front location 
 
         % update physical properties
-  
+        fluid.updateDensity(param, domain, bubbleList, fluidProp);
+%        fluid.updateViscosity(fluidProp);
     % end
     
     % store second order variables
