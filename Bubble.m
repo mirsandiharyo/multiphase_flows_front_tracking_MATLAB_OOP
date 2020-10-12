@@ -73,5 +73,39 @@ classdef Bubble < handle
             obj.x(obj.point+2) = obj.x(2);
             obj.y(obj.point+2) = obj.y(2);
         end
+        
+    end
+    
+    methods (Static)
+        %% Distribute a value from a lagrangian point to neighboring eulerian cells.
+        function cell = distributeLagrangianToEulerian(domain, cell, x, y, ...
+                value, axis)
+            % assign the grid size
+            switch axis
+                case 1 % x-dir
+                    d1 = domain.dx;
+                    d2 = domain.dy;    
+                case 2 % y-dir
+                    d1 = domain.dy;
+                    d2 = domain.dx;   
+                otherwise
+                    error("direction error inside distributeLagrangianToEulerian");
+            end
+            % get the eulerian cell indices
+            [indexX, indexY] = getCellIndex(x, y, domain.dx, domain.dy, axis); 
+            % calculate the weighing coefficients
+            [coeffX, coeffY] = getWeightCoeff(x, y, domain.dx, domain.dy, ...
+                indexX, indexY, axis); 
+
+            % distribute the force to the surrounding eulerian cells
+            cell(indexX  ,indexY  ) = cell(indexX  ,indexY  ) + ...
+                (1.0-coeffX)*(1.0-coeffY)*value/d1/d2;
+            cell(indexX+1,indexY  ) = cell(indexX+1,indexY  ) + ...
+                coeffX*(1.0-coeffY)*value/d1/d2;
+            cell(indexX  ,indexY+1) = cell(indexX  ,indexY+1) + ... 
+                (1.0-coeffX)*coeffY*value/d1/d2;      
+            cell(indexX+1,indexY+1) = cell(indexX+1,indexY+1) + ...
+                coeffX*coeffY*value/d1/d2;
+        end
     end
 end
