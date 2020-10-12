@@ -92,10 +92,9 @@ classdef Bubble < handle
                     error("direction error inside distributeLagrangianToEulerian");
             end
             % get the eulerian cell indices
-            [indexX, indexY] = getCellIndex(x, y, domain.dx, domain.dy, axis); 
+            [indexX, indexY] = domain.getCellIndex(x, y, axis); 
             % calculate the weighing coefficients
-            [coeffX, coeffY] = getWeightCoeff(x, y, domain.dx, domain.dy, ...
-                indexX, indexY, axis); 
+            [coeffX, coeffY] = domain.getWeightCoeff(x, y, indexX, indexY, axis); 
 
             % distribute the force to the surrounding eulerian cells
             cell(indexX  ,indexY  ) = cell(indexX  ,indexY  ) + ...

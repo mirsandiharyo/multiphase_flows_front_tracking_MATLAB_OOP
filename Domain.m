@@ -6,7 +6,7 @@ classdef Domain
         nx
         ny
         dx
-        obj.dy
+        dy
         gravx
         gravy
     end
@@ -21,12 +21,12 @@ classdef Domain
             obj.gravx = gravx;
             obj.gravy = gravy;
             obj.dx = lx/nx;
-            obj.obj.dy = ly/ny;
+            obj.dy = ly/ny;
         end
         
         %% Fetch the indices of the eulerian cell located on the left of a 
         % given point.
-        function[indexX, indexY] = get_cell_index(obj, x, y, axis)
+        function[indexX, indexY] = getCellIndex(obj, x, y, axis)
             switch axis
                 case 1 % x-dir
                     indexX = floor(x/obj.dx)+1;
@@ -41,8 +41,7 @@ classdef Domain
             
         %% Calculate the weight coefficients of a point with respect to its 
         % location inside the eulerian cell.
-        function[coeffX, coeffY] = get_weight_coeff(obj, x, y, indexX, ...
-            indexY, axis)
+        function[coeffX, coeffY] = getWeightCoeff(obj, x, y, indexX, indexY, axis)
             switch axis
                 case 1 % x-dir 
                     coeffX = x/obj.dx-indexX+1;
