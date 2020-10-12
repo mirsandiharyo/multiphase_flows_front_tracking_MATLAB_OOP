@@ -101,7 +101,7 @@ classdef Bubble < handle
     
         %% Calculate the surface tension force on the lagrangian grid and 
         % distribute it to the surrounding eulerian grid cells.
-        function face = calculateSurfaceTension(obj, domain, fluidProp, face)
+        function calculateSurfaceTension(obj, domain, fluidProp, face)
             % initialize the variables to store the tangent vector
             [tanX, tanY] = deal(zeros(obj.point+2, obj.point+2));
 
