@@ -94,5 +94,15 @@ classdef Fluid < handle
             end              
         end
         
+        
+        %% Update the viscosity field using harmonic averaging.
+        function updateViscosity(obj, fluidProp)
+            obj.mu = bsxfun(@minus,obj.rho,fluidProp.contRho);
+            obj.mu = bsxfun(@times,obj.mu, ...
+                (fluidProp.dispMu -fluidProp.contMu)/ ...
+                (fluidProp.dispRho-fluidProp.contRho));
+            obj.mu = bsxfun(@plus,obj.mu,fluidProp.contMu);  
+        end
+        
     end
 end
